@@ -14,6 +14,8 @@ index_page = """
 	<li><a href="/check_bday">Check Valid Birthday</a></li>
 	<li><a href="/rot13">ROT13 Encryption</a></li>
 	<li><a href="/signup">Sign Up Form</a></li>
+	<li><a href="/templates/ex1">Templates Ex-1</a></li>
+	<li><a href="/templates/fizzbuzz">FizzBuzz Programming</a></li>
 </ul>
 </center>
 """
@@ -71,3 +73,29 @@ signupform = """
 <input type="submit">
 </form>
 """
+
+form_html = """
+<form>
+<h2> Add a food </h2>
+<input type = 'text' name='food'/>
+%s
+<button>Add</button>
+</form>
+"""
+
+hidden_html =  """
+<input type='hidden' value="%s">
+"""
+
+shopping_list_html = """
+<br>
+<br>
+
+<h2> Shopping List </h2>
+
+<ul>
+%s
+</ul>
+"""
+
+items_html = "<li>%s</li>"

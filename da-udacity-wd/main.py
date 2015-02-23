@@ -15,8 +15,9 @@
 # limitations under the License.
 #
 import webapp2
+import os
 from common_files import helper_functions
-from render_forms.all_forms import index_page,bdayform,rot13form,signupform
+from render_forms.all_forms import *
 
 class MainPage(webapp2.RequestHandler):
 	def get(self):
@@ -129,12 +130,61 @@ class WelcomeForSignUpHandler(webapp2.RequestHandler):
 		else:
 			self.redirect('/signup')
 
+import jinja2
+
+template_dir = os.path.join(os.path.dirname(__file__),'templates')
+jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
+								autoescape=True)
+
+class BaseHandler(webapp2.RequestHandler):
+	def write(self, *a, **kw):
+		self.response.out.write(*a)
+
+	def render_str(self, template, **params):
+		t = jinja_env.get_template(template)
+		return t.render(params)
+
+	def render(self, template, **kw):
+		self.write(self.render_str(template,**kw))
+
+class Template_less_handler(BaseHandler):
+	def get(self):
+		output = form_html
+		output_hidden = ""
+		output_items = ""
+
+		items = self.request.get_all('food')
+		if items:
+			for item in items:
+				output_hidden += hidden_html % item
+				output_items += items_html % item
+
+			output_shopping = shopping_list_html % output_items 
+			output += output_shopping
+		output = output % output_hidden
+
+		self.write(output)
+
+class Template_test1_handler(BaseHandler):
+	def get(self):
+		items = self.request.get_all('food')
+		self.render("shopping_list.html", items=items)
+
+class FizzbuzzHandler(BaseHandler):
+	def get(self):
+		n = self.request.get('n',0)
+		n = n and int(n)
+		self.render("fizzbuzz.html", n=n)
+
 app = webapp2.WSGIApplication([
 	('/', MainPage),
 	('/thanks',ThanksHandler),
 	('/check_bday',ValidBdayHandler),
 	('/rot13',RotThirteenHandler),
 	('/signup',SignUpHandler),
-	('/welcome',WelcomeForSignUpHandler)
+	('/welcome',WelcomeForSignUpHandler),
+	('/template_less',Template_less_handler),
+	('/templates/ex1',Template_test1_handler),
+	('/templates/fizzbuzz',FizzbuzzHandler),
 	# ('/testform', TestHandler)
 ], debug=True)
